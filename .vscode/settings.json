@@ -1,0 +1,17 @@
+{
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        ".idea/**": true,
+        ".Bundles/**": true,
+        ".venv/**": true,
+        "**/__pycache__/**": true,
+    },
+    "python.pythonPath": "~/AppData/Local/Programs/Python/Python36/python.exe",
+    "shellformat.path": "C:/Users/user/shfmt/shfmt_v2.6.4_windows_386.exe",
+}

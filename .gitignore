@@ -1,0 +1,66 @@
+# Prerequisites
+**/*.d
+
+# Linker output
+**/*.ilk
+**/*.map
+**/*.exp
+**/*.xml
+
+# Precompiled Headers
+**/*.gch
+**/*.pch
+
+# Libraries
+**/*.lib
+**/*.a
+**/*.la
+**/*.lo
+
+# Shared objects (inc. Windows DLLs)
+**/*.dll
+**/*.so
+**/*.so.*
+**/*.dylib
+
+# Executables
+**/*.exe
+**/*.out
+**/*.app
+**/*.i*86
+**/*.x86_64
+**/*.hex
+**/*.cof
+
+# Debug files
+**/*.dSYM/
+**/*.su
+**/*.idb
+**/*.pdb
+
+# Kernel Module Compile Results
+**/*.mod*
+**/*.cmd
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# python
+**/*.pyc
+**/*.whl
+**/*.tar.gz
+**/*.jar
+**/*.zip
+.venv/*
+**/*.whl
+**/*.gz
+**/*.exe
+**/*.egg
+**/*.iso
+
+**/*.lnk
+.vscode/.ropeproject/objectdb
+.vscode/.ropeproject/config.py
+
+local
