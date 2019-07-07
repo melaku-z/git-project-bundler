@@ -23,9 +23,9 @@ class project:
                     self.name, aDir))
 
     def createZipOrBundle(self):
-        self.comment = input('Enter zip description: ')
+        self.comment = input('{0}: Enter zip description: '.format(self.name))
         isOnlyGitBundle = (
-            input('Run only git Bundle, No full project zip? (n/y): ') != 'n')
+            input('{0}: Run only git Bundle, No full project zip? (n/y): '.format(self.name)) != 'n')
         nowDatetimeText = datetime.datetime.now().strftime("%B %d, %Y %H-%M-%S ")
         self.bundleFileFullPath = self.bundleOutDir + '/' + \
             self.bundleFileNamePrefix + ' ' + nowDatetimeText + ' ' + self.comment
@@ -45,7 +45,7 @@ class project:
     def gitBundleCreate(self):
         defultDaysToBundle = 4
         daysToBundle = input(
-            'Number of Days of Commits to Bundle (defaults to {0}): '.format(defultDaysToBundle))
+            '{0}: Number of Days of Commits to Bundle (defaults to {1}): '.format(self.name, defultDaysToBundle))
         if daysToBundle == '':
             daysToBundle = 1
         daysToBundle = max([defultDaysToBundle, int(daysToBundle)])
@@ -88,8 +88,7 @@ class project:
         commands['gitPullAllBranchesCmd']['gitBash'] = commands['gitPullAllBranchesCmd']['bash']
 
         gitBundleCmd = commands['addOriginBundle'] + \
-            commands['gitPullAllBranchesCmd'][currentLocation['wayOfExecution']
-                                              ] + commands['pullAll']
+            commands['gitPullAllBranchesCmd'][currentLocation['wayOfExecution']]
         return gitBundleCmd
 
     def gitBundlePull(self):
@@ -111,16 +110,20 @@ def ZipOrBundleProjectFromUser(activeProjects: dict):
         projectQueryStr += '{0} for {1}, '.format(str(index), projects_dict[index]['name'])
     projectQueryStr += '(defaults to {0}): '.format(defaultProj)
 
-    projectType = input(projectQueryStr)
+    projectTypeStr = input(projectQueryStr)
+    projectTypeList = []
     try:
-        projectType = int(projectType)
-        if projectType not in projects_dict:
-            projectType = defaultProj
+        for aStrInput in projectTypeStr.split(' '):
+            if int(aStrInput) in projects_dict:
+                projectTypeList += [int(aStrInput)]
+        else:
+            projectTypeList += [defaultProj]
     except (TypeError, ValueError):
-        projectType = defaultProj
+        projectTypeList += [defaultProj]
 
-    aProject = project(projects_dict[projectType])
-    aProject.createZipOrBundle()
+    for aProjectType in projectTypeList:
+        aProject = project(projects_dict[aProjectType])
+        aProject.createZipOrBundle()
 
 
 def pullAllProjectBundles(activeProjects: dict):
@@ -150,9 +153,13 @@ def filterActiveProjects():
 
 if __name__ == "__main__":
 
-    activeProjects = filterActiveProjects()
-    pullAllProjectBundles(activeProjects)
-    syncFilesInFolder()
+    try:
+        activeProjects = filterActiveProjects()
+        pullAllProjectBundles(activeProjects)
+        syncFilesInFolder()
+    except Exception as ex:
+        print(ex)
+        input("press enter to continue.")
 
     while (input('Do you want to continue with the operation? (n/y)') != 'n'):
         try:
