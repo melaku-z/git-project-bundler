@@ -3,7 +3,7 @@ import os
 import shutil
 import glob
 from config import currentLocation, projects_dict, defaultProj
-from commandRunners import runPSCmd, runBashCmd, runCmd, runGitBashCmd, win_to_linux_path, correctWinPath
+from commandRunners import runPSCmd, runBashCmd, runCmd, runGitBashCmd, format_path_for_shell, correctWinPath
 from syncFolders import saveFileList, ZipFileList, getMissingFileList
 
 
@@ -14,7 +14,7 @@ class project:
         self.bundleInDirs = currentLocation['bundlesDirs']
         self.bundleOutDir = currentLocation['bundlesDirs'][0] + '/bundlesOut/'
         self.comment = ''
-        self.bundleFileNamePrefix = project_dict['name'][:3].lower()
+        self.bundleFileNamePrefix = project_dict['name']
         self.bundleFileFullPath = ''
 
         for aDir in [self.source, self.bundleInDirs[0], self.bundleOutDir]:
@@ -52,7 +52,7 @@ class project:
         gitBundleCmd = [
             'cd "' + self.source + '"',
             'git status branch',
-            'git bundle create "' + self.bundleFileFullPath +
+            'git bundle create "' + correctWinPath(self.bundleFileFullPath) +
             '.bundle" --since=' + str(daysToBundle) + '.days --all'
         ]
         print('Creating git bundle. Please Wait . . .')
@@ -74,14 +74,14 @@ class project:
             'addOriginBundle': [
                 'cd "{0}"'.format(self.source),
                 '{1} git remote set-url originBundle "{0}" || git remote add originBundle "{0}"'.format(
-                    correctWinPath(fileNameBundle), currentLocation['wayOfExecution']),
+                    format_path_for_shell(fileNameBundle), currentLocation['wayOfExecution']),
             ],
             'pullAll': [
                 'git pull originBundle',
             ],
             'gitPullAllBranchesCmd': {
                 'powershell': [r"powershell for /F %remote in ('git branch -r') do ( git branch --set-upstream-to %remote)"],
-                'bash': ['{0} "{1}/gitPullAllBranchesFromOriginBundle.bash"'.format(currentLocation['wayOfExecution'], win_to_linux_path(thisProjectDir, currentLocation['wayOfExecution']))],
+                'bash': ['{0} "{1}/gitPullAllBranchesFromOriginBundle.bash"'.format(currentLocation['wayOfExecution'], format_path_for_shell(thisProjectDir, currentLocation['wayOfExecution']))],
             },
         }
 

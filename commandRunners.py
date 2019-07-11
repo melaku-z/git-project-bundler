@@ -49,7 +49,7 @@ def runCmd(PS_Cmd_List: list, cwdDir=None, wayOfExecution='bash', OSName='linux'
                     aCMD = ['bash', '--login', aCMD[5:]]
             elif aCMD[:8] == 'gitBash ':
                 aCMD = ['bash', '--login', '-i', '-c', 'cd "' +
-                        win_to_linux_path(cwdDir, wayOfExecution) + '" && ' + aCMD[8:]]
+                        format_path_for_shell(cwdDir, wayOfExecution) + '" && ' + aCMD[8:]]
             openedProcess = Popen(aCMD, shell=True, cwd=cwdDir)
             pollRunningProcess(openedProcess)
 
@@ -72,7 +72,10 @@ def correctWinPath(win_path: str):
     return win_path
 
 
-def win_to_linux_path(win_path: str, wayOfExecution='bash'):
+def format_path_for_shell(win_path: str, wayOfExecution='bash'):
+    if wayOfExecution not in ['bash', 'gitBash']:
+        return correctWinPath(win_path)
+    
     mountPrefix = {
         'bash': '/mnt',
         'gitBash': '',
