@@ -50,9 +50,9 @@ class project:
             daysToBundle = 1
         daysToBundle = max([defultDaysToBundle, int(daysToBundle)])
         gitBundleCmd = [
-            'cd {0}'.format(self.source),
+            'cd "{0}"'.format(self.source),
             'git status branch',
-            'git bundle create {0}.bundle" --since={1}.days --all'.format(
+            'git bundle create "{0}.bundle" --since={1}.days --all'.format(
                 correctWinPath(self.bundleFileFullPath), str(daysToBundle))
         ]
         print('Creating git bundle. Please Wait . . .')
