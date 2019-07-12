@@ -1,4 +1,4 @@
-# Project Bundler
+# Git Project Bundler
 
 This project helps to sync a git project between two or more computers/device not connected to the same network.
 
@@ -7,11 +7,10 @@ This project helps to sync a git project between two or more computers/device no
 1. Clone this repo
 2. Create "local/config.py" file at the root of the project
 3. Create configurations for your git projects as stated in the next section
-4. Run the python file "__main__.py" or project directory to sync projects
 
 ## Configuration
 
-Three configuration items can be saved in the "config_local.py" file.
+Three configuration items can be saved in the "local/config.py" file.
 
 1. A dictionary item containing details of all projects to sync.
 
@@ -44,7 +43,7 @@ projects_dict = {
 currentLocation = {
         'name': 'pc1',
         'offlineFilesDir': 'a full path' # string, optional path to sync non-git files between devices
-        'bundlesDirs': 'a full path' # string, path to generate git-bundle files to, and pull bundle files from
+        'bundlesDirs': ['a list of full paths'] # string, path to generate git-bundle files to, and pull bundle files from
         'enableMissingFileListGeneration': False,
         'enableMissingFileZipGeneration': False,
         'syncFilesTo': 'pc2',
@@ -52,3 +51,7 @@ currentLocation = {
         'OSName': 'linux',  # linux, windows
     }
 ```
+
+## Usage
+
+Run the python file "__main__.py" or project directory using Python 3

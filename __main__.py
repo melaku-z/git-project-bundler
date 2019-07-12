@@ -50,10 +50,10 @@ class project:
             daysToBundle = 1
         daysToBundle = max([defultDaysToBundle, int(daysToBundle)])
         gitBundleCmd = [
-            'cd "' + self.source + '"',
+            'cd {0}'.format(self.source),
             'git status branch',
-            'git bundle create "' + correctWinPath(self.bundleFileFullPath) +
-            '.bundle" --since=' + str(daysToBundle) + '.days --all'
+            'git bundle create {0}.bundle" --since={1}.days --all'.format(
+                correctWinPath(self.bundleFileFullPath), str(daysToBundle))
         ]
         print('Creating git bundle. Please Wait . . .')
         runCmd(
@@ -94,7 +94,8 @@ class project:
     def gitBundlePull(self):
         fileNamesBundle = []
         for destFolder in self.bundleInDirs:
-            fileNamesBundle += glob.glob('{0}/{1}*.bundle'.format(destFolder, self.bundleFileNamePrefix))
+            fileNamesBundle += glob.glob('{0}/{1}*.bundle'.format(
+                destFolder, self.bundleFileNamePrefix))
 
         for fileNameBundle in fileNamesBundle:
             runCmd(
@@ -107,7 +108,8 @@ def ZipOrBundleProjectFromUser(activeProjects: dict):
 
     projectQueryStr = 'Enter '
     for index in activeProjects.keys():
-        projectQueryStr += '{0} for {1}, '.format(str(index), projects_dict[index]['name'])
+        projectQueryStr += '{0} for {1}, '.format(
+            str(index), projects_dict[index]['name'])
     projectQueryStr += '(defaults to {0}): '.format(defaultProj)
 
     projectTypeStr = input(projectQueryStr)
@@ -169,6 +171,7 @@ if __name__ == "__main__":
             input("press enter to continue.")
         try:
             if currentLocation['OSName'] == 'windows':
-                os.startfile(currentLocation['bundlesDirs'][0] + '/bundlesOut/')
+                os.startfile(
+                    currentLocation['bundlesDirs'][0] + '/bundlesOut/')
         except Exception as err:
             print('coudn\'t display bundlesDir folder: ' + str(err))
