@@ -70,11 +70,16 @@ class project:
     def getGitBundleCmd(self, fileNameBundle):
         thisProjectDir = os.path.dirname(os.path.abspath(__file__))
 
+        if currentLocation['wayOfExecution'] == 'bash':
+            fileNameBundle = format_path_for_shell(fileNameBundle)
+        else:
+            fileNameBundle = correctWinPath(fileNameBundle)
+
         commands = {
             'addOriginBundle': [
                 'cd "{0}"'.format(self.source),
                 '{1} git remote set-url originBundle "{0}" || git remote add originBundle "{0}"'.format(
-                    format_path_for_shell(fileNameBundle), currentLocation['wayOfExecution']),
+                    fileNameBundle, currentLocation['wayOfExecution']),
             ],
             'pullAll': [
                 'git pull originBundle',
