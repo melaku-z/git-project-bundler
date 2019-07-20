@@ -126,7 +126,11 @@ def ZipOrBundleProjectFromUser(activeProjects: dict):
         else:
             projectTypeList += [defaultProj]
     except (TypeError, ValueError):
-        projectTypeList += [defaultProj]
+        if len(projectTypeList) == 0:
+            projectTypeList += [defaultProj]
+
+    # remove duplicate values in projectTypeList
+    projectTypeList = list(dict.fromkeys(projectTypeList))
 
     for aProjectType in projectTypeList:
         aProject = project(projects_dict[aProjectType])
