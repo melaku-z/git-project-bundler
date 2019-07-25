@@ -29,7 +29,7 @@ except ImportError:
             'enableMissingFileListGeneration': False,
             'enableMissingFileZipGeneration': True,
             'syncFilesTo': 'pc3',
-            'wayOfExecution': 'bash',  # options are: bash, powershell, direct, git-bash
+            'wayOfExecution': 'bash',  # options are: bash, powershell, direct, gitBash
             'OSName': 'windows',  # options are: windows, linux
         },
         'pc3': {
@@ -38,7 +38,7 @@ except ImportError:
             'enableMissingFileListGeneration': False,
             'enableMissingFileZipGeneration': True,
             'syncFilesTo': 'pc2',
-            'wayOfExecution': 'git-bash',
+            'wayOfExecution': 'gitBash',
             'OSName': 'linux',
         },
     }

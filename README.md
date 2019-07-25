@@ -47,7 +47,7 @@ currentLocation = {
         'enableMissingFileListGeneration': False,
         'enableMissingFileZipGeneration': False,
         'syncFilesTo': 'pc2',
-        'wayOfExecution': 'git-bash',  # Git commands can be executed in 4 ways: direct, bash, powershell, git-bash (for windows)
+        'wayOfExecution': 'gitBash',  # Git commands can be executed in 4 ways: direct, bash, powershell, gitBash (for windows)
         'OSName': 'linux',  # linux, windows
     }
 ```
