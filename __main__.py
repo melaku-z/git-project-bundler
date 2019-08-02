@@ -47,7 +47,7 @@ class project:
         daysToBundle = input(
             '{0}: Number of Days of Commits to Bundle (defaults to {1}): '.format(self.name, defultDaysToBundle))
         if daysToBundle == '':
-            daysToBundle = 1
+            daysToBundle = defultDaysToBundle
         daysToBundle = max([defultDaysToBundle, int(daysToBundle)])
         gitBundleCmd = [
             'cd "{0}"'.format(self.source),
@@ -101,6 +101,7 @@ class project:
         for destFolder in self.bundleInDirs:
             fileNamesBundle += glob.glob('{0}/{1}*.bundle'.format(
                 destFolder, self.bundleFileNamePrefix))
+        fileNamesBundle.sort()
 
         for fileNameBundle in fileNamesBundle:
             runCmd(
@@ -123,11 +124,11 @@ def ZipOrBundleProjectFromUser(activeProjects: dict):
         for aStrInput in projectTypeStr.split(' '):
             if int(aStrInput) in projects_dict:
                 projectTypeList += [int(aStrInput)]
-        else:
-            projectTypeList += [defaultProj]
     except (TypeError, ValueError):
-        if len(projectTypeList) == 0:
-            projectTypeList += [defaultProj]
+        pass
+
+    if len(projectTypeList) == 0:
+        projectTypeList = [defaultProj]
 
     # remove duplicate values in projectTypeList
     projectTypeList = list(dict.fromkeys(projectTypeList))
