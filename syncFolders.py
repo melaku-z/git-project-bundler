@@ -2,13 +2,13 @@ import glob
 import os
 import shutil
 import datetime
-from config import currentLocation
+from config import config
 
 
-def saveFileList(DirName=currentLocation['offlineFilesDir'], SaveTo=''):
+def saveFileList(DirName=config['currentLocation']['offlineFilesDir'], SaveTo=''):
     if SaveTo == '':
-        SaveTo = currentLocation['bundlesDirs'][0] + \
-            '/offlineList_' + currentLocation['name'] + '.txt'
+        SaveTo = config['currentLocation']['bundlesDirs'][0] + \
+            '/offlineList_' + config['currentLocation']['name'] + '.txt'
     FileList = list(glob.glob(DirName+'/*.*'))
     FileList = list(aFile.split('/')[-1].split('\\')[-1] for aFile in FileList)
     with open(SaveTo, mode='w') as ListFileObj:
@@ -16,10 +16,10 @@ def saveFileList(DirName=currentLocation['offlineFilesDir'], SaveTo=''):
             print(aFile, file=ListFileObj)
 
 
-def getMissingFileList(DirName=currentLocation['offlineFilesDir'], listFile=''):
+def getMissingFileList(DirName=config['currentLocation']['offlineFilesDir'], listFile=''):
     if listFile == '':
-        listFile = currentLocation['bundlesDirs'][0] + \
-            '/offlineList_' + currentLocation['syncFilesTo'] + '.txt'
+        listFile = config['currentLocation']['bundlesDirs'][0] + \
+            '/offlineList_' + config['currentLocation']['syncFilesTo'] + '.txt'
     FilesInDirList = glob.glob(DirName+'/*.*')
     FilesInDirList = list(FileInDirList.split(
         '/')[-1].split('\\')[-1] for FileInDirList in FilesInDirList)
@@ -39,7 +39,7 @@ def getMissingFileList(DirName=currentLocation['offlineFilesDir'], listFile=''):
     }
 
 
-def ZipFileList(listOfFiles, SaveToDir=currentLocation['bundlesDirs'][0] + '/bundlesOut/'):
+def ZipFileList(listOfFiles, SaveToDir=config['currentLocation']['bundlesDirs'][0] + '/bundlesOut/'):
     print('started zipping ' + str(len(listOfFiles)) + ' files.')
     if len(listOfFiles) == 0:
         print('exited file zipper.')
@@ -47,7 +47,7 @@ def ZipFileList(listOfFiles, SaveToDir=currentLocation['bundlesDirs'][0] + '/bun
     if not os.path.exists(SaveToDir+'/tempZip/'):
         os.mkdir(SaveToDir+'/tempZip/')
     for aFile in listOfFiles:
-        shutil.copy(currentLocation['offlineFilesDir'] +
+        shutil.copy(config['currentLocation']['offlineFilesDir'] +
                     '/'+aFile, SaveToDir+'/tempZip/')
     nowText = datetime.datetime.now().strftime("%B %d, %Y %H-%M-%S ")
     shutil.make_archive(SaveToDir+'/compress_'+nowText,
@@ -63,8 +63,8 @@ def UnZipAndUpdateFileList(ZipName, destDir):
 
 def UpdateFileList(NewFileList, listFile=''):
     if listFile == '':
-        listFile = currentLocation['bundlesDirs'][0] + \
-            '/offlineList_' + currentLocation['syncFilesTo'] + '.txt'
+        listFile = config['currentLocation']['bundlesDirs'][0] + \
+            '/offlineList_' + config['currentLocation']['syncFilesTo'] + '.txt'
     try:
         with open(listFile, mode='a') as ListFileObj:
             for aFile in NewFileList:

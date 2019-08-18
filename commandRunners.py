@@ -75,7 +75,7 @@ def correctWinPath(win_path: str):
 def format_path_for_shell(win_path: str, wayOfExecution='bash'):
     if wayOfExecution not in ['bash', 'gitBash']:
         return correctWinPath(win_path)
-    
+
     mountPrefix = {
         'bash': '/mnt',
         'gitBash': '',

@@ -1,11 +1,14 @@
 try:
-    from local.config import currentLocation, projects_dict, defaultProj
+    from local.config import config
 except ImportError:
-    print("Local config not found. Using default configuration.")
-    projects_dict = {
+    print("Warning: Local config not found. Using default configuration.")
+    config = {}
+
+default_config = {
+    'projects_dict': {
         7: {
             'name': 'bundler',
-            'active': True,
+            'active': False,  # True if project is currently active
             'locations': {
                 'pc1': {
                     'source': 'C:/Users/user1/projectBundler',
@@ -18,29 +21,21 @@ except ImportError:
                 },
             }
         },
-    }
+    },
+    'defaultProj': 7,
+    'currentLocation': {
+        'name': 'pc2',
+        'bundlesDirs': ['D:/toCopy'],
+        'enableMissingFileListGeneration': False,
+        'enableMissingFileZipGeneration': False,
+        'syncFilesTo': '',  # a location/computer-name
+        'wayOfExecution': 'bash',  # options are: bash, powershell, direct, gitBash
+        'OSName': 'windows',  # options are: windows, linux
+    },
+    'file_name_descripiton_enabled': False,
+    'project_zip_generation_enabled': False,
+    'defult_days_of_commits_to_bundle': 4,
+}
 
-    defaultProj = 7
-
-    locationsDict = {
-        'pc2': {
-            'name': 'pc2',
-            'bundlesDirs': ['D:/toCopy'],
-            'enableMissingFileListGeneration': False,
-            'enableMissingFileZipGeneration': True,
-            'syncFilesTo': 'pc3',
-            'wayOfExecution': 'bash',  # options are: bash, powershell, direct, gitBash
-            'OSName': 'windows',  # options are: windows, linux
-        },
-        'pc3': {
-            'name': 'pc3',
-            'bundlesDirs': ['/home/usr/toCopy'],
-            'enableMissingFileListGeneration': False,
-            'enableMissingFileZipGeneration': True,
-            'syncFilesTo': 'pc2',
-            'wayOfExecution': 'gitBash',
-            'OSName': 'linux',
-        },
-    }
-
-    currentLocation = locationsDict['pc2']
+default_config.update(config)
+config = default_config

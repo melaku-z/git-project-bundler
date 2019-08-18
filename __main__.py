@@ -2,7 +2,7 @@ import datetime
 import os
 import shutil
 import glob
-from config import currentLocation, projects_dict, defaultProj
+from config import config
 from commandRunners import runPSCmd, runBashCmd, runCmd, runGitBashCmd, format_path_for_shell, correctWinPath
 from syncFolders import saveFileList, ZipFileList, getMissingFileList
 
@@ -10,9 +10,11 @@ from syncFolders import saveFileList, ZipFileList, getMissingFileList
 class project:
     def __init__(self, project_dict: dict):
         self.name = project_dict['name']
-        self.source = project_dict['locations'][currentLocation['name']]['source']
-        self.bundleInDirs = currentLocation['bundlesDirs']
-        self.bundleOutDir = currentLocation['bundlesDirs'][0] + '/bundlesOut/'
+        self.source = project_dict['locations'][config['currentLocation']
+                                                ['name']]['source']
+        self.bundleInDirs = config['currentLocation']['bundlesDirs']
+        self.bundleOutDir = config['currentLocation']['bundlesDirs'][0] + \
+            '/bundlesOut/'
         self.comment = ''
         self.bundleFileNamePrefix = project_dict['name']
         self.bundleFileFullPath = ''
@@ -23,9 +25,16 @@ class project:
                     self.name, aDir))
 
     def createZipOrBundle(self):
-        self.comment = input('{0}: Enter zip description: '.format(self.name))
-        isOnlyGitBundle = (
-            input('{0}: Run only git Bundle, No full project zip? (n/y): '.format(self.name)) != 'n')
+        if config['file_name_descripiton_enabled']:
+            self.comment = input('{0}: Enter zip description: '.format(self.name))
+        else:
+            self.comment = ''
+        
+        if config['project_zip_generation_enabled']: 
+            isOnlyGitBundle = (
+                input('{0}: Run only git Bundle, No full project zip? (n/y): '.format(self.name)) != 'n')
+        else:
+            isOnlyGitBundle = True
         nowDatetimeText = datetime.datetime.now().strftime("%B %d, %Y %H-%M-%S ")
         self.bundleFileFullPath = self.bundleOutDir + '/' + \
             self.bundleFileNamePrefix + ' ' + nowDatetimeText + ' ' + self.comment
@@ -37,18 +46,18 @@ class project:
                 shutil.make_archive(
                     self.bundleFileFullPath, 'zip', self.source)
             print('successfuly created bundle/zip.')
-            if 'startFileAfterBundleCreation' in currentLocation:
-                os.startfile(currentLocation['startFileAfterBundleCreation'])
+            if 'startFileAfterBundleCreation' in config['currentLocation']:
+                os.startfile(config['currentLocation']
+                             ['startFileAfterBundleCreation'])
         except BaseException as anError:
             print('errors: ' + str(anError))
 
     def gitBundleCreate(self):
-        defultDaysToBundle = 4
         daysToBundle = input(
-            '{0}: Number of Days of Commits to Bundle (defaults to {1}): '.format(self.name, defultDaysToBundle))
+            '{0}: Number of Days of Commits to Bundle (defaults to {1}): '.format(self.name, config['defult_days_of_commits_to_bundle']))
         if daysToBundle == '':
-            daysToBundle = defultDaysToBundle
-        daysToBundle = max([defultDaysToBundle, int(daysToBundle)])
+            daysToBundle = config['defult_days_of_commits_to_bundle']
+        daysToBundle = max([config['defult_days_of_commits_to_bundle'], int(daysToBundle)])
         gitBundleCmd = [
             'cd "{0}"'.format(self.source),
             'git status branch',
@@ -57,7 +66,7 @@ class project:
         ]
         print('Creating git bundle. Please Wait . . .')
         runCmd(
-            gitBundleCmd, wayOfExecution=currentLocation['wayOfExecution'], OSName=currentLocation['OSName'])
+            gitBundleCmd, wayOfExecution=config['currentLocation']['wayOfExecution'], OSName=config['currentLocation']['OSName'])
 
     def archiveBundle(self, fileNameBundle):
         for destFolder in self.bundleInDirs:
@@ -70,7 +79,7 @@ class project:
     def getGitBundleCmd(self, fileNameBundle):
         thisProjectDir = os.path.dirname(os.path.abspath(__file__))
 
-        if currentLocation['wayOfExecution'] == 'bash':
+        if config['currentLocation']['wayOfExecution'] == 'bash':
             fileNameBundle = format_path_for_shell(fileNameBundle)
         else:
             fileNameBundle = correctWinPath(fileNameBundle)
@@ -79,21 +88,22 @@ class project:
             'addOriginBundle': [
                 'cd "{0}"'.format(self.source),
                 '{1} git remote set-url originBundle "{0}" || git remote add originBundle "{0}"'.format(
-                    fileNameBundle, currentLocation['wayOfExecution']),
+                    fileNameBundle, config['currentLocation']['wayOfExecution']),
             ],
             'pullAll': [
                 'git pull originBundle',
             ],
             'gitPullAllBranchesCmd': {
                 'powershell': [r"powershell for /F %remote in ('git branch -r') do ( git branch --set-upstream-to %remote)"],
-                'bash': ['{0} "{1}/gitPullAllBranchesFromOriginBundle.bash"'.format(currentLocation['wayOfExecution'], format_path_for_shell(thisProjectDir, currentLocation['wayOfExecution']))],
+                'bash': ['{0} "{1}/gitPullAllBranchesFromOriginBundle.bash"'.format(config['currentLocation']['wayOfExecution'], format_path_for_shell(thisProjectDir, config['currentLocation']['wayOfExecution']))],
             },
         }
 
         commands['gitPullAllBranchesCmd']['gitBash'] = commands['gitPullAllBranchesCmd']['bash']
 
         gitBundleCmd = commands['addOriginBundle'] + \
-            commands['gitPullAllBranchesCmd'][currentLocation['wayOfExecution']]
+            commands['gitPullAllBranchesCmd'][config['currentLocation']
+                                              ['wayOfExecution']]
         return gitBundleCmd
 
     def gitBundlePull(self):
@@ -105,7 +115,7 @@ class project:
 
         for fileNameBundle in fileNamesBundle:
             runCmd(
-                self.getGitBundleCmd(fileNameBundle), wayOfExecution=currentLocation['wayOfExecution'], OSName=currentLocation['OSName'])
+                self.getGitBundleCmd(fileNameBundle), wayOfExecution=config['currentLocation']['wayOfExecution'], OSName=config['currentLocation']['OSName'])
 
             self.archiveBundle(fileNameBundle)
 
@@ -115,26 +125,26 @@ def ZipOrBundleProjectFromUser(activeProjects: dict):
     projectQueryStr = 'Enter '
     for index in activeProjects.keys():
         projectQueryStr += '{0} for {1}, '.format(
-            str(index), projects_dict[index]['name'])
-    projectQueryStr += '(defaults to {0}): '.format(defaultProj)
+            str(index), config['projects_dict'][index]['name'])
+    projectQueryStr += '(defaults to {0}): '.format(config['defaultProj'])
 
     projectTypeStr = input(projectQueryStr)
     projectTypeList = []
     try:
         for aStrInput in projectTypeStr.split(' '):
-            if int(aStrInput) in projects_dict:
+            if int(aStrInput) in config['projects_dict']:
                 projectTypeList += [int(aStrInput)]
     except (TypeError, ValueError):
         pass
 
     if len(projectTypeList) == 0:
-        projectTypeList = [defaultProj]
+        projectTypeList = [config['defaultProj']]
 
     # remove duplicate values in projectTypeList
     projectTypeList = list(dict.fromkeys(projectTypeList))
 
     for aProjectType in projectTypeList:
-        aProject = project(projects_dict[aProjectType])
+        aProject = project(config['projects_dict'][aProjectType])
         aProject.createZipOrBundle()
 
 
@@ -147,18 +157,18 @@ def pullAllProjectBundles(activeProjects: dict):
 
 
 def syncFilesInFolder():
-    if (currentLocation['enableMissingFileZipGeneration'] or currentLocation['enableMissingFileListGeneration']):
+    if (config['currentLocation']['enableMissingFileZipGeneration'] or config['currentLocation']['enableMissingFileListGeneration']):
         if input('Start File Sync?(y/n)') == 'y':
-            if currentLocation['enableMissingFileZipGeneration']:
+            if config['currentLocation']['enableMissingFileZipGeneration']:
                 ZipFileList(getMissingFileList()['FilesMissingInList'])
-            if currentLocation['enableMissingFileListGeneration']:
+            if config['currentLocation']['enableMissingFileListGeneration']:
                 saveFileList()
 
 
 def filterActiveProjects():
     activeProjects = {}
-    for aProjectItemKey, aProjectItemValue in projects_dict.items():
-        if aProjectItemValue['active'] and currentLocation['name'] in aProjectItemValue['locations'].keys():
+    for aProjectItemKey, aProjectItemValue in config['projects_dict'].items():
+        if aProjectItemValue['active'] and config['currentLocation']['name'] in aProjectItemValue['locations'].keys():
             activeProjects[aProjectItemKey] = aProjectItemValue
     return activeProjects
 
@@ -180,8 +190,8 @@ if __name__ == "__main__":
             print(ex)
             input("press enter to continue.")
         try:
-            if currentLocation['OSName'] == 'windows':
+            if config['currentLocation']['OSName'] == 'windows':
                 os.startfile(
-                    currentLocation['bundlesDirs'][0] + '/bundlesOut/')
+                    config['currentLocation']['bundlesDirs'][0] + '/bundlesOut/')
         except Exception as err:
             print('coudn\'t display bundlesDir folder: ' + str(err))
